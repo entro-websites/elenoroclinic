@@ -242,7 +242,7 @@
 
   /* specijalisti */
   .spec { position: relative; overflow: hidden; isolation: isolate; }
-  .spec-glow { position: absolute; z-index: -1; width: 720px; height: 720px; left: var(--gx, 70%); top: var(--gy, 40%); margin: -360px 0 0 -360px; border-radius: 50%; background: radial-gradient(circle, rgba(179, 147, 100, .22), transparent 64%); pointer-events: none; transition: left 1.2s var(--ease), top 1.2s var(--ease); }
+  .spec-glow { position: absolute; z-index: -1; width: 720px; height: 720px; left: var(--gx, 70%); top: var(--gy, 40%); margin: -360px 0 0 -360px; border-radius: 50%; background: radial-gradient(circle, rgba(179, 147, 100, .22), transparent 64%); pointer-events: none; }
   .spec::before { content: ""; position: absolute; inset: 0; z-index: -1; background-image: linear-gradient(rgba(244, 242, 238, .04) 1px, transparent 1px), linear-gradient(90deg, rgba(244, 242, 238, .04) 1px, transparent 1px); background-size: 64px 64px; -webkit-mask-image: radial-gradient(ellipse at 70% 40%, #000, transparent 70%); mask-image: radial-gradient(ellipse at 70% 40%, #000, transparent 70%); }
   .spec-layout { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 64px; align-items: center; }
   .spec .sec-head { margin-bottom: 40px; }
@@ -843,7 +843,7 @@
     });
   });
 
-  /* specijalisti: auto-smena, ručni izbor, svetlo prati miš */
+  /* specijalisti: auto-smena, ručni izbor */
   var spec = $('#specijalisti'), spTabs = $$('.sp-tab'), spPanels = $$('.sp-panel'), stage = $('#spStage'), spI = 0, spTimer, DUR = 6000, spVisible = false;
   spec.style.setProperty('--dur', DUR / 1000 + 's');
   function spShow(i, user) {
@@ -867,11 +867,6 @@
   stage.addEventListener('mouseleave', function () { spec.classList.remove('paused'); });
   if (reduce) spec.classList.add('manual');
   if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { var was = spVisible; spVisible = es[0].isIntersecting; if (spVisible && !was && !spec.classList.contains('manual')) spShow(spI); }, { threshold: .3 }).observe(spec);
-  spec.addEventListener('pointermove', function (e) {
-    if (reduce || e.pointerType !== 'mouse') return;
-    var r = spec.getBoundingClientRect();
-    spec.style.setProperty('--gx', (e.clientX - r.left) + 'px'); spec.style.setProperty('--gy', (e.clientY - r.top) + 'px');
-  });
 
   /* citat: reč po reč + paralaksa pozadine */
   var quote = $('#citat'), qWords = [];
