@@ -241,16 +241,90 @@
   @media (max-width: 560px) { .why-list { grid-template-columns: minmax(0, 1fr); gap: 32px; } }
 
   /* specijalisti */
-  .spec-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; }
-  .doc { border: 1px solid var(--line-dark); border-radius: var(--r); padding: 28px 24px; transition: background-color .4s, border-color .4s, transform .4s var(--ease); }
-  .doc:hover { background: rgba(255, 255, 255, .04); border-color: rgba(179, 147, 100, .5); transform: translateY(-4px); }
-  .doc svg { width: 32px; height: 32px; stroke: var(--accent); fill: none; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; margin-bottom: 40px; }
-  .doc h3 { font-size: 20px; color: var(--on-dark); margin-bottom: 4px; }
-  .doc p { font-size: 12px; color: var(--on-dark-muted); letter-spacing: .02em; }
-  .spec-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 24px; margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--line-dark); }
-  .spec-foot p { color: var(--on-dark-muted); }
-  @media (max-width: 1024px) { .spec-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
-  @media (max-width: 640px) { .spec-grid { grid-template-columns: minmax(0, 1fr); gap: 12px; } .doc { display: grid; grid-template-columns: 40px 1fr; column-gap: 16px; align-items: center; padding: 20px; } .doc svg { grid-row: span 2; margin: 0; } }
+  .spec { position: relative; overflow: hidden; isolation: isolate; }
+  .spec-glow { position: absolute; z-index: -1; width: 720px; height: 720px; left: var(--gx, 70%); top: var(--gy, 40%); margin: -360px 0 0 -360px; border-radius: 50%; background: radial-gradient(circle, rgba(179, 147, 100, .22), transparent 64%); pointer-events: none; transition: left 1.2s var(--ease), top 1.2s var(--ease); }
+  .spec::before { content: ""; position: absolute; inset: 0; z-index: -1; background-image: linear-gradient(rgba(244, 242, 238, .04) 1px, transparent 1px), linear-gradient(90deg, rgba(244, 242, 238, .04) 1px, transparent 1px); background-size: 64px 64px; -webkit-mask-image: radial-gradient(ellipse at 70% 40%, #000, transparent 70%); mask-image: radial-gradient(ellipse at 70% 40%, #000, transparent 70%); }
+  .spec-layout { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 64px; align-items: center; }
+  .spec .sec-head { margin-bottom: 40px; }
+  .sp-tabs { display: grid; border-top: 1px solid var(--line-dark); }
+  .sp-tab { position: relative; display: grid; grid-template-columns: 40px 1fr 24px; align-items: center; gap: 12px; padding: 20px 0; border-bottom: 1px solid var(--line-dark); text-align: left; color: var(--on-dark-muted); transition: color .3s; }
+  .sp-tab .n { font-family: var(--head); font-size: 12px; font-weight: 600; color: rgba(244, 242, 238, .4); transition: color .3s; }
+  .sp-tab .nm { font-family: var(--head); font-size: 24px; font-weight: 600; letter-spacing: -0.02em; line-height: 1.2; transition: transform .5s var(--ease); }
+  .sp-tab svg { width: 24px; height: 24px; stroke: var(--accent); fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; opacity: 0; transform: translateX(-8px); transition: opacity .4s var(--ease), transform .4s var(--ease); }
+  .sp-tab .bar { position: absolute; left: 0; right: 0; bottom: -1px; height: 2px; overflow: hidden; }
+  .sp-tab .bar i { position: absolute; inset: 0; background: linear-gradient(90deg, var(--accent), #e4cfa8); transform: scaleX(0); transform-origin: left; }
+  .sp-tab:hover { color: var(--on-dark); }
+  .sp-tab:hover .nm { transform: translateX(8px); }
+  .sp-tab[aria-selected="true"] { color: #fff; }
+  .sp-tab[aria-selected="true"] .n { color: var(--accent); }
+  .sp-tab[aria-selected="true"] .nm { transform: translateX(8px); }
+  .sp-tab[aria-selected="true"] svg { opacity: 1; transform: none; }
+  .spec.live .sp-tab[aria-selected="true"] .bar i { animation: spbar var(--dur, 6s) linear forwards; }
+  .spec.paused .sp-tab[aria-selected="true"] .bar i { animation-play-state: paused; }
+  .spec.manual .sp-tab[aria-selected="true"] .bar i { animation: none; transform: scaleX(1); }
+  @keyframes spbar { to { transform: scaleX(1); } }
+
+  .sp-stage { position: relative; display: grid; border-radius: var(--r-lg); background: linear-gradient(160deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .02)); border: 1px solid var(--line-dark); box-shadow: 0 40px 80px -40px rgba(0, 0, 0, .6); overflow: hidden; }
+  .sp-stage::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, .06) 50%, transparent 60%); background-size: 300% 100%; background-position: 100% 0; pointer-events: none; }
+  .sp-stage.flash::after { animation: sheen 1.4s var(--ease); }
+  @keyframes sheen { from { background-position: 100% 0; } to { background-position: -50% 0; } }
+  .sp-panel { grid-area: 1 / 1; padding: 56px; display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 16px 48px; align-content: center; min-height: 480px; }
+  html.js .sp-panel { visibility: hidden; }
+  html.js .sp-panel.on { visibility: visible; }
+  .sp-art { grid-row: span 4; position: relative; width: 160px; height: 160px; align-self: start; }
+  .sp-art .ring { position: absolute; inset: 0; width: 100%; height: 100%; animation: spin 24s linear infinite; }
+  .sp-art .ring circle { fill: none; stroke: rgba(179, 147, 100, .5); stroke-width: 1; stroke-dasharray: 2 8; }
+  .sp-art .disc { position: absolute; inset: 20px; border-radius: 50%; background: radial-gradient(circle at 30% 25%, rgba(179, 147, 100, .32), rgba(179, 147, 100, .06) 70%); border: 1px solid rgba(179, 147, 100, .35); display: grid; place-items: center; }
+  .sp-art .disc svg { width: 64px; height: 64px; fill: none; stroke: #ecdcbc; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+  .sp-art .orbit { position: absolute; left: 50%; top: 50%; width: 8px; height: 8px; margin: -4px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 16px 4px rgba(179, 147, 100, .6); transform-origin: 4px 4px; transform: rotate(0deg) translateX(80px); animation: orbit2 8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes orbit2 { to { transform: rotate(360deg) translateX(80px); } }
+  .sp-k { font-family: var(--head); font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+  .sp-panel h3 { font-size: clamp(32px, 3.6vw, 48px); color: #fff; letter-spacing: -0.03em; }
+  .sp-d { color: var(--on-dark-muted); font-size: 18px; max-width: 440px; }
+  .sp-rel { padding-top: 24px; border-top: 1px solid var(--line-dark); }
+  .sp-rel .sp-k { color: rgba(244, 242, 238, .5); margin-bottom: 12px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chips li { display: inline-flex; align-items: center; gap: 8px; padding: 8px 16px; border-radius: 999px; background: rgba(255, 255, 255, .06); border: 1px solid var(--line-dark); font-size: 16px; color: var(--on-dark); line-height: 1.4; transition: background-color .3s, border-color .3s; }
+  .chips li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .chips li:hover { background: rgba(179, 147, 100, .16); border-color: rgba(179, 147, 100, .5); }
+  .sp-foot { grid-column: 2; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; margin-top: 16px; }
+  .sp-count { font-family: var(--head); font-size: 16px; color: rgba(244, 242, 238, .5); font-variant-numeric: tabular-nums; }
+  .sp-count b { color: #fff; font-weight: 600; }
+
+  /* ulaz panela */
+  html.js .sp-panel .sp-in { opacity: 0; transform: translateY(20px); }
+  html.js .sp-panel.on .sp-in { animation: spin-in .8s var(--ease) forwards; }
+  html.js .sp-panel.on .sp-in:nth-child(2) { animation-delay: .06s; } html.js .sp-panel.on .sp-in:nth-child(3) { animation-delay: .12s; }
+  html.js .sp-panel.on .sp-in:nth-child(4) { animation-delay: .18s; } html.js .sp-panel.on .sp-in:nth-child(5) { animation-delay: .24s; } html.js .sp-panel.on .sp-in:nth-child(6) { animation-delay: .3s; }
+  html.js .sp-panel .chips li { opacity: 0; transform: scale(.9); }
+  html.js .sp-panel.on .chips li { animation: chip .5s var(--ease) forwards; }
+  html.js .sp-panel.on .chips li:nth-child(1) { animation-delay: .35s; } html.js .sp-panel.on .chips li:nth-child(2) { animation-delay: .43s; }
+  html.js .sp-panel.on .chips li:nth-child(3) { animation-delay: .51s; } html.js .sp-panel.on .chips li:nth-child(4) { animation-delay: .59s; }
+  html.js .sp-panel .disc { transform: scale(.6); opacity: 0; }
+  html.js .sp-panel.on .disc { animation: pop .9s cubic-bezier(.3, 1.4, .5, 1) forwards; }
+  html.js .sp-panel .disc path, html.js .sp-panel .disc circle { stroke-dasharray: 1; stroke-dashoffset: 1; }
+  html.js .sp-panel.on .disc path, html.js .sp-panel.on .disc circle { animation: draw 1.4s var(--ease) .25s forwards; }
+  @keyframes spin-in { to { opacity: 1; transform: none; } }
+  @keyframes chip { to { opacity: 1; transform: none; } }
+  @keyframes pop { to { opacity: 1; transform: none; } }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+
+  @media (max-width: 1024px) { .spec-layout { grid-template-columns: minmax(0, 1fr); gap: 40px; } .sp-tabs { grid-template-columns: repeat(5, minmax(0, 1fr)); border-top: 0; } .sp-tab { grid-template-columns: 1fr; gap: 4px; padding: 16px 8px 16px 0; } .sp-tab svg { display: none; } .sp-tab .nm { font-size: 16px; } .sp-tab:hover .nm, .sp-tab[aria-selected="true"] .nm { transform: none; } }
+  @media (max-width: 720px) {
+    .sp-tabs { display: flex; overflow-x: auto; scrollbar-width: none; gap: 24px; margin: 0 calc(-1 * var(--pad)); padding: 0 var(--pad); }
+    .sp-tabs::-webkit-scrollbar { display: none; }
+    .sp-tab { flex: none; padding-right: 0; }
+    .sp-panel { grid-template-columns: minmax(0, 1fr); padding: 32px 24px; min-height: 0; gap: 12px; }
+    .sp-art { grid-row: auto; width: 120px; height: 120px; margin-bottom: 8px; }
+    .sp-art .disc { inset: 16px; } .sp-art .disc svg { width: 48px; height: 48px; }
+    .sp-art .orbit { transform: rotate(0deg) translateX(60px); animation-name: orbit3; }
+    .sp-foot { grid-column: 1; }
+    .sp-d { font-size: 16px; }
+  }
+  @keyframes orbit3 { to { transform: rotate(360deg) translateX(60px); } }
+  html:not(.js) .sp-tabs { display: none; }
+  html:not(.js) .sp-panel { grid-area: auto; border-bottom: 1px solid var(--line-dark); }
 
   /* klinika */
   .about-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 80px; align-items: start; }
@@ -281,12 +355,34 @@
   .lb .x { top: 24px; right: 24px; } .lb .pv { left: 24px; top: 50%; margin-top: -24px; } .lb .nx { right: 24px; top: 50%; margin-top: -24px; }
 
   /* citat */
-  .quote { background: var(--accent-soft); }
-  .quote figure { max-width: 880px; margin: 0 auto; text-align: center; }
-  .quote svg { width: 48px; height: 48px; fill: var(--accent); margin: 0 auto 32px; }
-  .quote blockquote { font-family: var(--head); font-size: clamp(24px, 3.2vw, 40px); font-weight: 500; line-height: 1.3; letter-spacing: -0.02em; }
-  .quote figcaption { margin-top: 32px; font-size: 16px; color: var(--muted); }
-  .quote figcaption b { color: var(--ink); font-weight: 600; }
+  .quote { position: relative; overflow: hidden; isolation: isolate; background: #121416; color: #fff; padding-top: 160px; padding-bottom: 160px; }
+  .q-bg { position: absolute; left: 0; right: 0; top: -20%; bottom: -20%; z-index: -2; will-change: transform; }
+  .q-bg img { width: 100%; height: 100%; object-fit: cover; filter: blur(12px) saturate(.7) brightness(.42); transform: scale(1.12); }
+  .quote::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(ellipse at 50% 50%, rgba(18, 20, 22, .2), rgba(18, 20, 22, .85) 80%); }
+  .q-orb { position: absolute; z-index: -1; border-radius: 50%; filter: blur(40px); opacity: .5; pointer-events: none; }
+  .q-orb.a { width: 320px; height: 320px; left: 8%; top: 12%; background: rgba(179, 147, 100, .5); animation: drift 14s ease-in-out infinite; }
+  .q-orb.b { width: 240px; height: 240px; right: 10%; bottom: 8%; background: rgba(228, 207, 168, .35); animation: drift 18s ease-in-out -6s infinite reverse; }
+  @keyframes drift { 33% { transform: translate(40px, -24px); } 66% { transform: translate(-24px, 32px); } }
+  .q-fig { max-width: 1040px; margin: 0 auto; text-align: center; }
+  .q-mark { width: 64px; height: 64px; margin: 0 auto 40px; display: block; fill: var(--accent); }
+  html.js .q-mark { opacity: 0; transform: scale(.4) rotate(-12deg); transition: opacity .8s var(--ease), transform 1s cubic-bezier(.3, 1.5, .5, 1); }
+  html.js .quote.in .q-mark { opacity: 1; transform: none; }
+  .quote blockquote { font-family: var(--head); font-size: clamp(28px, 4.4vw, 56px); font-weight: 500; line-height: 1.24; letter-spacing: -0.03em; color: #fff; }
+  .quote .hl { position: relative; font-style: normal; color: #e9d6b0; white-space: nowrap; }
+  .quote .hl::after { content: ""; position: absolute; left: 0; right: 0; bottom: -.04em; height: .08em; border-radius: 999px; background: linear-gradient(90deg, var(--accent), #ecdcbc); transform: scaleX(0); transform-origin: left; transition: transform 1s var(--ease); }
+  .quote.done .hl::after { transform: scaleX(1); }
+  html:not(.js) .quote .hl::after { transform: scaleX(1); }
+  .quote .w { display: inline-block; }
+  html.js .quote .w { opacity: .12; filter: blur(6px); transform: translateY(12px); transition: opacity .7s var(--ease), filter .7s var(--ease), transform .7s var(--ease); }
+  html.js .quote .w.lit { opacity: 1; filter: none; transform: none; }
+  .quote figcaption { display: flex; align-items: center; justify-content: center; gap: 16px; margin-top: 48px; font-family: var(--head); font-size: 16px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: rgba(255, 255, 255, .8); }
+  .q-line { width: 48px; height: 1px; background: var(--accent); }
+  html.js .quote figcaption { opacity: 0; transition: opacity .8s var(--ease); }
+  html.js .quote figcaption .q-line { transform: scaleX(0); transition: transform 1s var(--ease) .2s; }
+  html.js .quote.done figcaption { opacity: 1; }
+  html.js .quote.done figcaption .q-line { transform: none; }
+  .q-line:first-child { transform-origin: right; } .q-line:last-child { transform-origin: left; }
+  @media (max-width: 768px) { .quote { padding-top: 112px; padding-bottom: 112px; } .q-mark { width: 48px; height: 48px; } }
 
   /* faq */
   .faq-grid { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 80px; align-items: start; }
@@ -506,23 +602,58 @@
       </div>
     </section>
 
-    <section class="sec dark" id="specijalisti">
-      <div class="wrap">
-        <header class="sec-head rv">
-          <p class="tag">Konsultativni pregledi</p>
-          <h2>Specijalisti pod istim krovom</h2>
-          <p><span class="s">Pored hirurških procedura, kod nas možete zakazati</span><span class="s">i konsultativni pregled kod specijaliste.</span></p>
-        </header>
-        <div class="spec-grid stagger" id="spec">
-          <div class="doc"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="11"/><circle cx="12" cy="13" r="1.5"/><circle cx="19" cy="18" r="2"/></svg><h3>Dermatolog</h3><p>Koža i mladeži</p></div>
-          <div class="doc"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M10 4c0 8 12 8 12 16s-6 8-6 8M16 4c0 4 6 6 6 10"/></svg><h3>Vaskularni hirurg</h3><p>Vene i kapilari</p></div>
-          <div class="doc"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M8 24L22 10l3 3-14 14H8z"/><path d="M19 7l6 6"/></svg><h3>Onkohirurg</h3><p>Tumori kože</p></div>
-          <div class="doc"><svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="6" r="2.5"/><path d="M16 10v9M10 14h12M12 28l4-9 4 9"/></svg><h3>Fizijatar</h3><p>Fizikalna medicina</p></div>
-          <div class="doc"><svg viewBox="0 0 32 32" aria-hidden="true"><path d="M12 4c-2 0-3 2-2 4l2 3v10l-2 3c-1 2 0 4 2 4s3-2 4-3c1 1 2 3 4 3s3-2 2-4l-2-3V11l2-3c1-2 0-4-2-4s-3 2-4 3c-1-1-2-3-4-3z"/></svg><h3>Ortoped</h3><p>Kosti i zglobovi</p></div>
+    <section class="sec dark spec" id="specijalisti">
+      <div class="spec-glow" aria-hidden="true"></div>
+      <div class="wrap spec-layout">
+        <div>
+          <header class="sec-head rv">
+            <p class="tag">Konsultativni pregledi</p>
+            <h2>Specijalisti pod istim krovom</h2>
+            <p><span class="s">Pored hirurških procedura, kod nas možete zakazati</span><span class="s">i konsultativni pregled kod specijaliste.</span></p>
+          </header>
+          <div class="sp-tabs rv" role="tablist" aria-label="Specijalisti"><button class="sp-tab" type="button" role="tab" id="spt0" aria-controls="spp0" aria-selected="true"><span class="n">01</span><span class="nm">Dermatolog</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span class="bar"><i></i></span></button><button class="sp-tab" type="button" role="tab" id="spt1" aria-controls="spp1" aria-selected="false" tabindex="-1"><span class="n">02</span><span class="nm">Vaskularni hirurg</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span class="bar"><i></i></span></button><button class="sp-tab" type="button" role="tab" id="spt2" aria-controls="spp2" aria-selected="false" tabindex="-1"><span class="n">03</span><span class="nm">Onkohirurg</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span class="bar"><i></i></span></button><button class="sp-tab" type="button" role="tab" id="spt3" aria-controls="spp3" aria-selected="false" tabindex="-1"><span class="n">04</span><span class="nm">Fizijatar</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span class="bar"><i></i></span></button><button class="sp-tab" type="button" role="tab" id="spt4" aria-controls="spp4" aria-selected="false" tabindex="-1"><span class="n">05</span><span class="nm">Ortoped</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg><span class="bar"><i></i></span></button></div>
         </div>
-        <div class="spec-foot rv">
-          <p>Termin za pregled zakazujete istim brojem telefona.</p>
-          <a href="tel:+381693337773" class="btn btn-primary">Pozovite 069 333 77 73</a>
+        <div class="sp-stage rv" id="spStage">
+            <div class="sp-panel on" role="tabpanel" id="spp0" aria-labelledby="spt0">
+              <div class="sp-art sp-in" aria-hidden="true"><svg class="ring" viewBox="0 0 160 160"><circle cx="80" cy="80" r="78"/></svg><span class="orbit"></span><div class="disc"><svg viewBox="0 0 64 64"><circle cx="28" cy="28" r="16" pathLength="1"/><path d="M40 40l14 14" pathLength="1"/><circle cx="23" cy="25" r="2.5" pathLength="1"/><circle cx="32" cy="32" r="3.5" pathLength="1"/><circle cx="31" cy="21" r="1.5" pathLength="1"/></svg></div></div>
+              <p class="sp-k sp-in">Konsultativni pregled</p>
+              <h3 class="sp-in">Dermatolog</h3>
+              <p class="sp-d sp-in">Pregled kože, mladeža i promena na koži.</p>
+              <div class="sp-rel sp-in"><p class="sp-k">Srodne procedure u klinici</p><ul class="chips"><li>Mladeži i tumori kože</li><li>Keratoze i papilomi</li><li>Korekcija ožiljaka</li><li>Mikrodermoabrazija lica</li></ul></div>
+              <div class="sp-foot sp-in"><a href="tel:+381693337773" class="btn btn-primary">Zakažite pregled <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><span class="sp-count"><b>01</b> / 05</span></div>
+            </div>
+            <div class="sp-panel" role="tabpanel" id="spp1" aria-labelledby="spt1">
+              <div class="sp-art sp-in" aria-hidden="true"><svg class="ring" viewBox="0 0 160 160"><circle cx="80" cy="80" r="78"/></svg><span class="orbit"></span><div class="disc"><svg viewBox="0 0 64 64"><path d="M32 6c0 12-8 16-8 26s8 14 8 26" pathLength="1"/><path d="M25 34c-6 4-10 10-12 18" pathLength="1"/><path d="M28 22c6 0 12-6 16-12" pathLength="1"/><path d="M30 46c6 0 12 4 16 10" pathLength="1"/></svg></div></div>
+              <p class="sp-k sp-in">Konsultativni pregled</p>
+              <h3 class="sp-in">Vaskularni hirurg</h3>
+              <p class="sp-d sp-in">Pregled vena i kapilara, uz savet o daljem lečenju.</p>
+              <div class="sp-rel sp-in"><p class="sp-k">Srodne procedure u klinici</p><ul class="chips"><li>Sklerozacija vena i kapilara</li><li>Presoterapija</li></ul></div>
+              <div class="sp-foot sp-in"><a href="tel:+381693337773" class="btn btn-primary">Zakažite pregled <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><span class="sp-count"><b>02</b> / 05</span></div>
+            </div>
+            <div class="sp-panel" role="tabpanel" id="spp2" aria-labelledby="spt2">
+              <div class="sp-art sp-in" aria-hidden="true"><svg class="ring" viewBox="0 0 160 160"><circle cx="80" cy="80" r="78"/></svg><span class="orbit"></span><div class="disc"><svg viewBox="0 0 64 64"><path d="M10 54l30-30 7 7-30 30H10z" pathLength="1"/><path d="M40 24l12-12a4 4 0 0 1 6 6L47 31" pathLength="1"/><path d="M22 42l6 6" pathLength="1"/></svg></div></div>
+              <p class="sp-k sp-in">Konsultativni pregled</p>
+              <h3 class="sp-in">Onkohirurg</h3>
+              <p class="sp-d sp-in">Pregled tumora kože i potkožnog tkiva.</p>
+              <div class="sp-rel sp-in"><p class="sp-k">Srodne procedure u klinici</p><ul class="chips"><li>Mladeži, tumori kože i potkožnog tkiva</li><li>Korekcija ožiljaka i tetovaža</li></ul></div>
+              <div class="sp-foot sp-in"><a href="tel:+381693337773" class="btn btn-primary">Zakažite pregled <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><span class="sp-count"><b>03</b> / 05</span></div>
+            </div>
+            <div class="sp-panel" role="tabpanel" id="spp3" aria-labelledby="spt3">
+              <div class="sp-art sp-in" aria-hidden="true"><svg class="ring" viewBox="0 0 160 160"><circle cx="80" cy="80" r="78"/></svg><span class="orbit"></span><div class="disc"><svg viewBox="0 0 64 64"><circle cx="32" cy="11" r="5" pathLength="1"/><path d="M32 18v20" pathLength="1"/><path d="M16 22l16 6 16-8" pathLength="1"/><path d="M32 38l-10 18M32 38l10 18" pathLength="1"/></svg></div></div>
+              <p class="sp-k sp-in">Konsultativni pregled</p>
+              <h3 class="sp-in">Fizijatar</h3>
+              <p class="sp-d sp-in">Pregled iz oblasti fizikalne medicine.</p>
+              <div class="sp-rel sp-in"><p class="sp-k">Srodne procedure u klinici</p><ul class="chips"><li>Shock wave terapija</li><li>Presoterapija</li></ul></div>
+              <div class="sp-foot sp-in"><a href="tel:+381693337773" class="btn btn-primary">Zakažite pregled <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><span class="sp-count"><b>04</b> / 05</span></div>
+            </div>
+            <div class="sp-panel" role="tabpanel" id="spp4" aria-labelledby="spt4">
+              <div class="sp-art sp-in" aria-hidden="true"><svg class="ring" viewBox="0 0 160 160"><circle cx="80" cy="80" r="78"/></svg><span class="orbit"></span><div class="disc"><svg viewBox="0 0 64 64"><path d="M24 4v20a8 8 0 0 0 16 0V4" pathLength="1"/><path d="M24 60V42a8 8 0 0 1 16 0v18" pathLength="1"/><path d="M20 33h4M40 33h4" pathLength="1"/></svg></div></div>
+              <p class="sp-k sp-in">Konsultativni pregled</p>
+              <h3 class="sp-in">Ortoped</h3>
+              <p class="sp-d sp-in">Pregled kostiju i zglobova, po zakazivanju.</p>
+              <div class="sp-rel sp-in"><p class="sp-k">Zakazivanje</p><ul class="chips"><li>Konsultativni pregled telefonom</li></ul></div>
+              <div class="sp-foot sp-in"><a href="tel:+381693337773" class="btn btn-primary">Zakažite pregled <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><span class="sp-count"><b>05</b> / 05</span></div>
+            </div>
         </div>
       </div>
     </section>
@@ -548,11 +679,13 @@
       </div>
     </section>
 
-    <section class="sec quote">
-      <figure class="wrap rv">
-        <svg viewBox="0 0 48 48" aria-hidden="true"><path d="M20 12C12 14 8 20 8 28v8h12V24h-6c0-4 2-7 6-8zm20 0c-8 2-12 8-12 16v8h12V24h-6c0-4 2-7 6-8z"/></svg>
-        <blockquote><span class="s">Niko nije mlad posle 40. godine,</span><span class="s">ali neodoljivi možemo biti bilo kada.</span></blockquote>
-        <figcaption><b>Coco Chanel</b></figcaption>
+    <section class="sec quote" id="citat">
+      <div class="q-bg" id="qBg" aria-hidden="true"><img src="assets/enterijer-5.jpg" alt="" width="480" height="656" loading="lazy"></div>
+      <span class="q-orb a" aria-hidden="true"></span><span class="q-orb b" aria-hidden="true"></span>
+      <figure class="wrap q-fig">
+        <svg class="q-mark" viewBox="0 0 48 48" aria-hidden="true"><path d="M20 12C12 14 8 20 8 28v8h12V24h-6c0-4 2-7 6-8zm20 0c-8 2-12 8-12 16v8h12V24h-6c0-4 2-7 6-8z"/></svg>
+        <blockquote id="qText"><span class="s">Niko nije mlad posle 40. godine,</span><span class="s">ali <em class="hl">neodoljivi</em> možemo biti bilo kada.</span></blockquote>
+        <figcaption><span class="q-line"></span>Coco Chanel<span class="q-line"></span></figcaption>
       </figure>
     </section>
 
@@ -709,6 +842,73 @@
       b.firstChild.textContent = o ? 'Prikaži manje ' : 'Prikaži sve ';
     });
   });
+
+  /* specijalisti: auto-smena, ručni izbor, svetlo prati miš */
+  var spec = $('#specijalisti'), spTabs = $$('.sp-tab'), spPanels = $$('.sp-panel'), stage = $('#spStage'), spI = 0, spTimer, DUR = 6000, spVisible = false;
+  spec.style.setProperty('--dur', DUR / 1000 + 's');
+  function spShow(i, user) {
+    spI = (i + spTabs.length) % spTabs.length;
+    spTabs.forEach(function (t, k) { var on = k === spI; t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1; var bar = $('.bar i', t); bar.style.animation = 'none'; bar.offsetWidth; bar.style.animation = ''; });
+    spPanels.forEach(function (p, k) { p.classList.toggle('on', k === spI); });
+    spec.classList.add('live');
+    stage.classList.remove('flash'); stage.offsetWidth; stage.classList.add('flash');
+    if (user) { spec.classList.add('manual'); clearTimeout(spTimer); }
+    else spSchedule();
+  }
+  function spSchedule() { clearTimeout(spTimer); if (reduce || spec.classList.contains('manual')) return; spTimer = setTimeout(function () { if (spVisible && !spec.classList.contains('paused')) spShow(spI + 1); else spSchedule(); }, DUR); }
+  spTabs.forEach(function (t, i) {
+    t.addEventListener('click', function () { spShow(i, true); });
+    t.addEventListener('keydown', function (e) {
+      var n = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? i + 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? i - 1 : null;
+      if (n !== null) { e.preventDefault(); spShow(n, true); spTabs[spI].focus(); }
+    });
+  });
+  stage.addEventListener('mouseenter', function () { spec.classList.add('paused'); });
+  stage.addEventListener('mouseleave', function () { spec.classList.remove('paused'); });
+  if (reduce) spec.classList.add('manual');
+  if ('IntersectionObserver' in window) new IntersectionObserver(function (es) { var was = spVisible; spVisible = es[0].isIntersecting; if (spVisible && !was && !spec.classList.contains('manual')) spShow(spI); }, { threshold: .3 }).observe(spec);
+  spec.addEventListener('pointermove', function (e) {
+    if (reduce || e.pointerType !== 'mouse') return;
+    var r = spec.getBoundingClientRect();
+    spec.style.setProperty('--gx', (e.clientX - r.left) + 'px'); spec.style.setProperty('--gy', (e.clientY - r.top) + 'px');
+  });
+
+  /* citat: reč po reč + paralaksa pozadine */
+  var quote = $('#citat'), qWords = [];
+  $$('#qText .s').forEach(function (line) {
+    (function walk(node) {
+      [].slice.call(node.childNodes).forEach(function (ch) {
+        if (ch.nodeType === 3) {
+          var f = document.createDocumentFragment();
+          ch.textContent.split(/(\s+)/).forEach(function (w) {
+            if (!w) return;
+            if (/^\s+$/.test(w)) { f.appendChild(document.createTextNode(w)); return; }
+            var sp = document.createElement('span'); sp.className = 'w'; sp.textContent = w; f.appendChild(sp); qWords.push(sp);
+          });
+          ch.parentNode.replaceChild(f, ch);
+        } else if (ch.nodeType === 1) walk(ch);
+      });
+    })(line);
+  });
+  function qPlay() {
+    quote.classList.add('in');
+    if (reduce) { qWords.forEach(function (w) { w.classList.add('lit'); }); quote.classList.add('done'); return; }
+    qWords.forEach(function (w, i) { setTimeout(function () { w.classList.add('lit'); }, 300 + i * 110); });
+    setTimeout(function () { quote.classList.add('done'); }, 300 + qWords.length * 110 + 300);
+  }
+  if ('IntersectionObserver' in window) {
+    var qio = new IntersectionObserver(function (es) { if (es[0].isIntersecting) { qPlay(); qio.disconnect(); } }, { threshold: .35 });
+    qio.observe(quote);
+  } else qPlay();
+  var qBg = $('#qBg');
+  function qPar() {
+    if (reduce) return;
+    var r = quote.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > innerHeight) return;
+    var k = (r.top + r.height / 2 - innerHeight / 2) / innerHeight;
+    qBg.style.transform = 'translate3d(0,' + (k * -80).toFixed(1) + 'px,0)';
+  }
+  addEventListener('scroll', qPar, { passive: true }); qPar();
 
   /* galerija lightbox */
   var lb = $('#lb'), lbImg = $('#lbImg'), lbCap = $('#lbCap'), shots = $$('#mosaic button'), idx = 0, last;
